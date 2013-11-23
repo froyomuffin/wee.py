@@ -1,0 +1,35 @@
+POST /upnp/control/basicevent1 HTTP/1.1
+SOAPAction: "urn:Belkin:service:basicevent:1#SetBinaryState"
+Host: 192.168.1.115:49153
+Content-Type: text/xml
+Content-Length: 333
+
+<?xml version="1.0"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<SOAP-ENV:Body>
+.<m:SetBinaryState xmlns:m="urn:Belkin:service:basicevent:1">
+<BinaryState>0</BinaryState>
+.</m:SetBinaryState>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+
+curl -v \
+-H "SOAPAction: "urn:Belkin:service:basicevent:1#SetBinaryState"" \
+-H "Content-Type: text/xml" \
+-d @OFF.xml \
+-X POST http://192.168.1.115:49513/upnp/control/basicevent1
+
+curl -v -H "SOAPAction: "urn:Belkin:service:basicevent:1#SetBinaryState"" -H "Content-Type: text/xml" -d @OFF.xml -X POST http://192.168.1.115:49513/upnp/control/basicevent1
+
+
+
+
+
+Initiation?
+curl -v \
+-H "Content-Type: text/xml; charset="utf-8"" \
+-A "User-Agent: uPNP/1.0" \
+-H "Connection: close" \
+-H "Accept-Encoding: identity" \
+-X GET http://192.168.1.112:49513/setup.xml

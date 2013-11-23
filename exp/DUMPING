@@ -1,0 +1,7 @@
+(echo "load host"; echo "host get 0"; echo "host send 0 controllee basicevent SetBinaryState"; echo "0") | python miranda.py
+
+(echo "load host"; echo "host get 0"; echo "host send 0 controllee basicevent SetBinaryState"; echo "1") | python miranda.py
+
+sudo tcpdump -n -s0 -vv dst 192.168.1.115 and port 49153 -w OFF.pcap
+
+sudo tcpdump -w OFF.pcap -s 0 -i any dst 192.168.1.115 and port 49153 

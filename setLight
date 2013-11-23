@@ -1,0 +1,42 @@
+#!/bin/sh
+setState () {
+SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+   <s:Body>
+      <u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">
+         <BinaryState>$1</BinaryState>
+      </u:SetBinaryState>
+   </s:Body>
+</s:Envelope>"
+
+curl --silent \
+-H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
+-H "Content-Type: text/xml" \
+-H "Accept:" \
+-A "" \
+-d "$SEND" \
+-X POST http://192.168.1.115:49153/upnp/control/basicevent1 > /dev/null
+}
+
+getState () {
+curl \
+-H "Content-Type: text/xml" \
+-H "Accept:" \
+-A "" \
+-X GET http://192.168.1.115:49153/
+}
+
+case $1 in
+	on)
+		setState 1
+		;;
+	off)
+		setState 0
+		;;
+	status)
+		echo "Function not completed yet"
+		;;
+	*)
+		echo "usage: lightSet (on|off|status)"
+		;;
+esac

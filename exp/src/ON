@@ -1,0 +1,1 @@
+(echo "load host"; echo "host get 0"; echo "host send 0 controllee basicevent SetBinaryState"; echo "1") | python miranda.py
