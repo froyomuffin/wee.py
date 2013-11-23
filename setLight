@@ -1,6 +1,10 @@
 #!/bin/sh
 
-. conf
+SERVERMAC="EC:1A:59:EC:1C:A9"
+SERVERPORT="49153"
+SERVERIP=`arp -a | grep $SERVERMAC | cut -d "(" -f2 | cut -d ")" -f1`
+BINPATH="bin"
+SERVERIP=192.168.1.115
 
 setState () {
 SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
@@ -12,17 +16,17 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-curl --silent \
+$BINPATH/curl \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
 -A "" \
 -d "$SEND" \
--X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1 > /dev/null
+-X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1
 }
 
 getState () {
-curl \
+$BINPATH/curl \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
 -A "" \

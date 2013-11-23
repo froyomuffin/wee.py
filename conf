@@ -1,3 +1,0 @@
-SERVERMAC="EC:1A:59:EC:1C:A9"
-SERVERPORT="49153"
-SERVERIP=`arp -a | grep $SERVERMAC | cut -d "(" -f2 | cut -d ")" -f1`
