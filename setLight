@@ -16,13 +16,15 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-$BINPATH/curl --silent \
+OUT=`$BINPATH/curl --silent \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
 -A "" \
 -d "$SEND" \
--X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1
+-X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1`
+
+getState
 }
 
 getState () {
@@ -34,14 +36,17 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-$BINPATH/curl --silent \
+OUT=`$BINPATH/curl --silent \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#GetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
 -A "" \
 -d "$SEND" \
 -X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1\
-| grep "</BinaryState>" | sed 's/<[^>]\+>//g'
+| grep "</BinaryState>" | sed 's/<[^>]\+>//g'`
+
+cat state > prevState
+echo $OUT > state
 }
 
 case $1 in
