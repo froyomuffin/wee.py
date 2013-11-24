@@ -16,7 +16,7 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-$BINPATH/curl \
+$BINPATH/curl --silent \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
@@ -26,11 +26,22 @@ $BINPATH/curl \
 }
 
 getState () {
-$BINPATH/curl \
+
+SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">
+   <s:Body>
+      <u:GetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\"></u:GetBinaryState>
+   </s:Body>
+</s:Envelope>"
+
+$BINPATH/curl --silent \
+-H "SOAPAction: \"urn:Belkin:service:basicevent:1#GetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
 -A "" \
--X GET http://$SERVERIP:$SERVERPORT/
+-d "$SEND" \
+-X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1\
+| grep "</BinaryState>" | sed 's/<[^>]\+>//g'
 }
 
 case $1 in
@@ -41,7 +52,7 @@ case $1 in
 		setState 0
 		;;
 	status)
-		echo "Function not completed yet"
+		getState
 		;;
 	*)
 		echo "usage: lightSet (on|off|status)"
