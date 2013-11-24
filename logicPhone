@@ -1,0 +1,18 @@
+STATE=`arp -a | grep 98:D6:F7:61:BB:68 | wc -l`
+PREVSTATE=`cat phoneState`
+echo $STATE > phoneState
+DIFF=`expr $PREVSTATE - $STATE`
+echo $DIFF
+case $DIFF in
+	0)
+		#No change
+		;;
+	-1)
+		#Turn on
+		./setLight on
+		;;
+	1)
+		#Turn off
+		./setLight off
+		;;
+esac
