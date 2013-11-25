@@ -45,6 +45,8 @@ OUT=`$BINPATH/curl --silent \
 -X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1\
 | grep "</BinaryState>" | sed 's/<[^>]\+>//g'`
 
+echo $OUT
+
 cat state > prevState
 echo $OUT > state
 }
