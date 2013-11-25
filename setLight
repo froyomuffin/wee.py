@@ -1,10 +1,9 @@
 #!/bin/sh
 
-SERVERMAC="EC:1A:59:EC:1C:A9"
+SERVERMAC=""
 SERVERPORT="49153"
 SERVERIP=`arp -a | grep $SERVERMAC | cut -d "(" -f2 | cut -d ")" -f1`
-BINPATH="bin"
-SERVERIP=192.168.1.115
+BINPATH="/"
 
 setState () {
 SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>

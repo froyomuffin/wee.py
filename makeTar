@@ -1,0 +1,2 @@
+rm wee.tar.gz
+tar czvf wee.tar.gz curl setLight logicPhone
