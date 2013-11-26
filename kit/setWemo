@@ -15,7 +15,7 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-OUT=`$BINPATHcurl --silent \
+OUT=`$BINPATH\curl --silent \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
@@ -35,7 +35,7 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-OUT=`$BINPATHcurl --silent \
+OUT=`$BINPATH\curl --silent \
 -H "SOAPAction: \"urn:Belkin:service:basicevent:1#GetBinaryState\"" \
 -H "Content-Type: text/xml" \
 -H "Accept:" \
