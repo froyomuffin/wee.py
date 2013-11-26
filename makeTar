@@ -10,5 +10,4 @@ tar -rvf wee.tar setWemo
 tar -rvf wee.tar checkEdge
 mv wee.tar ../
 cd ..
-echo pont
-gzip -9 wee.tar
+gzip wee.tar
