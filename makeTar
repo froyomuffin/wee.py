@@ -1,2 +1,14 @@
-rm wee.tar.gz
-tar czvf wee.tar.gz curl setLight logicPhone
+if [ -f wee.tar.gz ]
+then
+    rm wee.tar.gz
+fi
+cd router
+tar -cvf wee.tar curl
+mv wee.tar ../kit
+cd ../kit
+tar -rvf wee.tar setWemo
+tar -rvf wee.tar checkEdge
+mv wee.tar ../
+cd ..
+echo pont
+gzip -9 wee.tar

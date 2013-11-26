@@ -1,4 +1,6 @@
-STATE=`wl assoclist | grep 98:D6:F7:61:BB:68 | wc -l`
+CLIENTMAC=""
+
+STATE=`wl assoclist | grep $CLIENTMAC | wc -l`
 PREVSTATE=`cat phoneState`
 echo $STATE > phoneState
 DIFF=`expr $PREVSTATE - $STATE`
@@ -9,10 +11,10 @@ case $DIFF in
 		;;
 	-1)
 		#Turn on
-		./setLight on
+		./setWemo on
 		;;
 	1)
 		#Turn off
-		./setLight off
+		./setWemo off
 		;;
 esac
