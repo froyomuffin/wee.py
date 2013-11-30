@@ -4,4 +4,4 @@ BINPATH="/tmp/home/root"
 
 sed -i -r "s/SERVERMAC\=\"\"/SERVERMAC\=\"$SERVERMAC\"/g" kit/setWemo
 sed -i -r "s/CLIENTMAC\=\"\"/CLIENTMAC\=\"$CLIENTMAC\"/g" kit/checkEdge
-sed -i -r "s/BINPATH\=\"\"/BINPATH\=\"$BINPATH\"/g" kit/checkEdge
+sed -i -r "s/BINPATH\=\"\"/BINPATH\=\"$BINPATH\"/g" kit/*
