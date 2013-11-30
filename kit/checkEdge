@@ -1,4 +1,7 @@
+#!/bin/sh
+
 CLIENTMAC=""
+BINPATH=""
 
 STATE=`wl assoclist | grep $CLIENTMAC | wc -l`
 PREVSTATE=`cat phoneState`
