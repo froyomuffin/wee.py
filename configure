@@ -1,6 +1,6 @@
 SERVERMAC="EC:1A:59:EC:1C:A9"
 CLIENTMAC="90:C1:15:45:E8:93"
-BINPATH="\/tmp\/home\/root"
+BINPATH="\/tmp\/home\/root\/"
 
 sed -i -r "s/SERVERMAC\=\"\"/SERVERMAC\=\"$SERVERMAC\"/g" kit/setWemo
 sed -i -r "s/CLIENTMAC\=\"\"/CLIENTMAC\=\"$CLIENTMAC\"/g" kit/checkEdge
