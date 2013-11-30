@@ -14,10 +14,10 @@ case $DIFF in
 		;;
 	-1)
 		#Turn on
-		./setWemo on
+		$BINPATH/setWemo on
 		;;
 	1)
 		#Turn off
-		./setWemo off
+		$BINPATH/setWemo off
 		;;
 esac

@@ -1,5 +1,5 @@
 SERVERMAC="EC:1A:59:EC:1C:A9"
-CLIENTMAC="98:D6:F7:61:BB:68"
+CLIENTMAC="90:C1:15:45:E8:93"
 BINPATH="\/tmp\/home\/root"
 
 sed -i -r "s/SERVERMAC\=\"\"/SERVERMAC\=\"$SERVERMAC\"/g" kit/setWemo
