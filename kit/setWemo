@@ -3,7 +3,6 @@
 SERVERMAC=""
 SERVERPORT="49153"
 SERVERIP=`arp -a | grep $SERVERMAC | cut -d "(" -f2 | cut -d ")" -f1`
-BINPATH=""
 
 setState () {
 SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
@@ -15,13 +14,13 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-OUT=`$BINPATH\curl --silent \
--H "SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
--H "Content-Type: text/xml" \
--H "Accept:" \
--A "" \
--d "$SEND" \
--X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1`
+OUT=`wget -qO- \
+--header="SOAPAction: \"urn:Belkin:service:basicevent:1#SetBinaryState\"" \
+--header="Content-Type: text/xml" \
+--header="Accept:" \
+-U="" \
+--post-data="$SEND" \
+http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1 | less`
 
 getState
 }
@@ -35,13 +34,13 @@ SEND="<?xml version=\"1.0\" encoding=\"utf-8\"?>
    </s:Body>
 </s:Envelope>"
 
-OUT=`$BINPATH\curl --silent \
--H "SOAPAction: \"urn:Belkin:service:basicevent:1#GetBinaryState\"" \
--H "Content-Type: text/xml" \
--H "Accept:" \
--A "" \
--d "$SEND" \
--X POST http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1\
+OUT=`wget -qO- \
+--header="SOAPAction: \"urn:Belkin:service:basicevent:1#GetBinaryState\"" \
+--header="Content-Type: text/xml" \
+--header="Accept:" \
+-U="" \
+--post-data="$SEND" \
+http://$SERVERIP:$SERVERPORT/upnp/control/basicevent1 | less \
 | grep "</BinaryState>" | sed 's/<[^>]\+>//g'`
 
 echo $OUT
