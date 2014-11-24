@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
-import http.client
+from http.client import HTTPConnection
 from time import sleep
+from sys import argv
 
-class wemoClient():
+class wemoSwitch():
 	bodyTop = """
 	<?xml version="1.0" encoding="utf-8"?>
 	<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -52,33 +53,32 @@ class wemoClient():
 	def __init__(self, server, port="49153"):
 		self.server = server
 		self.port = port
-		print("Created wemo client for", self.server, self.port)
+		print("Created wemo switch on {}:{}".format(self.server, self.port))
 
 	def _request(self, body, headers):
-		conn = http.client.HTTPConnection(self.server, self.port)
+		conn = HTTPConnection(self.server, self.port)
 		conn.request("POST", "/upnp/control/basicevent1", body, headers)
 		response = conn.getresponse()
+		state = -1
+		if response.status == 200:
+			state = response.read().decode("utf-8")[216:217] # Slice the returned binary state in the body
 		conn.close()
-		print(response.status, response.reason)
-		return response
+		print("The switch's state is now:", state) # 0 = off, 1 = on, -1 = error
+		return state
 
 	def getStatus(self):
-		return self._request(wemoClient.bodyStatus, wemoClient.headersGet)
+		return self._request(wemoSwitch.bodyStatus, wemoSwitch.headersGet)
 
 	def turnOn(self):
-		return self._request(wemoClient.bodyOn, wemoClient.headersSet)
+		return self._request(wemoSwitch.bodyOn, wemoSwitch.headersSet)
 
 	def turnOff(self):
-		return self._request(wemoClient.bodyOff, wemoClient.headersSet)
+		return self._request(wemoSwitch.bodyOff, wemoSwitch.headersSet)
 
-dest = "192.168.1.107"
+def test(dest):
+	switch = wemoSwitch(dest)
+	switch.getStatus()
+	switch.turnOff()
+	sleep(1)
+	switch.turnOn()
 
-client = wemoClient(dest)
-
-client.getStatus()
-
-client.turnOff()
-
-sleep(2)
-
-client.turnOn()
