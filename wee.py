@@ -2,6 +2,7 @@
 
 from http.client import HTTPConnection
 from time import sleep
+from time import time
 from sys import argv
 
 class wemoSwitch():
@@ -75,10 +76,40 @@ class wemoSwitch():
 	def turnOff(self):
 		return self._request(wemoSwitch.bodyOff, wemoSwitch.headersSet)
 
+class watcher():
+	def __init__(self, server, watchInterval=5):
+		self.server = server
+		self.watchInterval = watchInterval
+		print("Created watcher for", self.server)
+
+	def check(self):
+		conn = HTTPConnection(self.server, timeout=2)
+		try:
+			conn.connect()
+		except ConnectionRefusedError:
+			print(self.server, "is reachable")
+			return 1
+		except:
+			print(self.server, "is not reachable")
+			return 0
+
+	def start(self):
+		while True:
+			startTime = time()
+			self.check()
+			stopTime = time()
+			sleepInterval = self.watchInterval - (stopTime - startTime)
+			if sleepInterval < 0:
+				sleepInterval = 0
+			sleep(sleepInterval)
+
 def test(dest):
 	switch = wemoSwitch(dest)
 	switch.getStatus()
 	switch.turnOff()
 	sleep(1)
 	switch.turnOn()
+	watch = watcher(dest)
+	watch.start()
 
+test("192.168.1.107")
