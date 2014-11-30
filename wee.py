@@ -4,7 +4,7 @@ from http.client import HTTPConnection
 from time import sleep
 from time import time
 from sys import argv
-from sys import version
+from sys import version_info
 import socket
 import errno
 
@@ -80,44 +80,62 @@ class wemoSwitch():
 		return self.__request(wemoSwitch.bodyOff, wemoSwitch.headersSet)
 
 class watcher():
-	def __init__(self, server, switch, watchInterval=5):
+	def __init__(self, server, switch, watchInterval=10):
 		self.server = server
 		self.switch = switch
 		self.watchInterval = watchInterval
 		self.lastServerState = 1
 		print("Created watcher for", self.server)
 
-	def checkServer(self):
+	def __checkServer(self):
 		conn = HTTPConnection(self.server, timeout=2)
+		status = 1
+
 		try:
 			conn.connect()
 		except socket.error as e:
-			if e.errno == errno.ECONNREFUSED:
-				print(self.server, "is reachable")
-				return 1
-			else:
-				print(self.server, "is not reachable")
-				conn.close()
-				return 0
+			if e.errno != errno.ECONNREFUSED:
+				status = 0 
+
+		conn.close()
+		return status
+
+	def checkServer(self):
+		startTime = time()
+		stopTime = startTime + self.watchInterval
+
+		total = 0
+		count = 0
+
+		while time() <= stopTime and count < 3:
+			print("Ping", self.server)
+			total += self.__checkServer()
+			count += 1
+			sleep(1)
+
+		sleep(stopTime - time())
+
+		state = round(total / count)
+
+		if state:
+			print("The server is present in the network")
+		else:
+			print("The server is not in the network")
+
+		return state
 
 	def start(self):
 		while True:
-			startTime = time()
-
 			currentState = self.checkServer()
+
 			edge = currentState - self.lastServerState
 
 			if edge > 0:
 				self.switch.turnOn()
 			elif edge < 0:
 				self.switch.turnOff()
-			self.lastServerState = currentState
 
-			stopTime = time()
-			sleepInterval = self.watchInterval - (stopTime - startTime)
-			if sleepInterval < 0:
-				sleepInterval = 0
-			sleep(sleepInterval)
+			self.lastServerState = currentState
 
 def test(wemo, phone):
 	switch = wemoSwitch(wemo)
