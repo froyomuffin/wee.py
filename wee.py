@@ -4,7 +4,7 @@ from http.client import HTTPConnection
 from time import sleep
 from time import time
 from sys import argv
-from sys import version_info
+import subprocess
 import socket
 import errno
 
@@ -87,10 +87,10 @@ class watcher():
 		self.lastServerState = 1
 		print("Created watcher for", self.server)
 
-	def __checkServer(self):
+	def __connectionChecker(self):
+		print("Conn check", self.server)
 		conn = HTTPConnection(self.server, timeout=2)
 		status = 1
-
 		try:
 			conn.connect()
 		except socket.error as e:
@@ -100,6 +100,10 @@ class watcher():
 		conn.close()
 		return status
 
+	def __pingChecker(self):
+		print("Ping check", self.server)
+		return not subprocess.call("ping -c 1 -w 1 {} > /dev/null".format(self.server), shell=True)
+
 	def checkServer(self):
 		startTime = time()
 		stopTime = startTime + self.watchInterval
@@ -108,8 +112,8 @@ class watcher():
 		count = 0
 
 		while time() <= stopTime and count < 3:
-			print("Ping", self.server)
-			total += self.__checkServer()
+			#total += self.__connectionChecker()
+			total += self.__pingChecker()
 			count += 1
 			sleep(1)
 
