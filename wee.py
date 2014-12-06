@@ -7,6 +7,7 @@ from sys import argv
 import subprocess
 import socket
 import errno
+import logging
 
 class wemoSwitch():
 	bodyTop = """
@@ -85,6 +86,8 @@ class watcher():
 		self.switch = switch
 		self.watchInterval = watchInterval
 		self.lastServerState = 1
+		self.logFile = str(time()) + "-wee.log"
+		logging.basicConfig(filename=self.logFile, level=logging.DEBUG, format='%(asctime)s %(message)s')
 		print("Created watcher for", self.server)
 
 	def __connectionChecker(self):
@@ -101,7 +104,7 @@ class watcher():
 		return status
 
 	def __pingChecker(self):
-		print("Ping check", self.server)
+		logging.debug("Ping checking " + self.server)
 		return not subprocess.call("ping -c 1 -w 1 {} > /dev/null".format(self.server), shell=True)
 
 	def checkServer(self):
@@ -111,20 +114,22 @@ class watcher():
 		total = 0
 		count = 0
 
-		while time() <= stopTime and count < 3:
-			#total += self.__connectionChecker()
+		while time() <= stopTime:
 			total += self.__pingChecker()
 			count += 1
-			sleep(1)
+			sleep(2)
 
-		sleep(stopTime - time())
+		sleepTime = stopTime - time()
+		
+		if sleepTime > 0:
+			sleep(sleepTime)
 
 		state = round(total / count)
 
 		if state:
-			print("The server is present in the network")
+			logging.debug("The server is present in the network")
 		else:
-			print("The server is not in the network")
+			logging.debug("The server is not in the network")
 
 		return state
 
@@ -135,8 +140,10 @@ class watcher():
 			edge = currentState - self.lastServerState
 
 			if edge > 0:
+				logging.debug("Turning on")
 				self.switch.turnOn()
 			elif edge < 0:
+				logging.debug("Turning off")
 				self.switch.turnOff()
 
 			self.lastServerState = currentState
@@ -147,7 +154,7 @@ def test(wemo, phone):
 	switch.turnOff()
 	sleep(1)
 	switch.turnOn()
-	watch = watcher(phone, switch)
+	watch = watcher(phone, switch, 30)
 	watch.start()
 
 test("192.168.1.107", "192.168.1.128")
