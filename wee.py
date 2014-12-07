@@ -81,10 +81,9 @@ class wemoSwitch():
 		return self.__request(wemoSwitch.bodyOff, wemoSwitch.headersSet)
 
 class watcher():
-	def __init__(self, server, switch, watchInterval=10):
+	def __init__(self, server, switch):
 		self.server = server
 		self.switch = switch
-		self.watchInterval = watchInterval
 		self.lastServerState = 1
 		self.logFile = str(time()) + "-wee.log"
 		logging.basicConfig(filename=self.logFile, level=logging.DEBUG, format='%(asctime)s %(message)s')
@@ -104,49 +103,57 @@ class watcher():
 		return status
 
 	def __pingChecker(self):
-		logging.debug("Ping checking " + self.server)
-		return not subprocess.call("ping -c 1 -w 1 {} > /dev/null".format(self.server), shell=True)
+		presence = not subprocess.call("ping -c 1 -w 1 {} > /dev/null".format(self.server), shell=True)
+		logging.debug("Ping checking " + self.server + " got " + str(presence))
+		return presence
 
 	def checkServer(self):
-		startTime = time()
-		stopTime = startTime + self.watchInterval
-
-		total = 0
-		count = 0
-
-		while time() <= stopTime:
-			total += self.__pingChecker()
-			count += 1
-			sleep(2)
-
-		sleepTime = stopTime - time()
-		
-		if sleepTime > 0:
-			sleep(sleepTime)
-
-		state = round(total / count)
-
-		if state:
+		if self.__pingChecker():
 			logging.debug("The server is present in the network")
+			return 1
 		else:
-			logging.debug("The server is not in the network")
-
-		return state
+			logging.debug("The server is not present in the network")
+			return 0
 
 	def start(self):
-		while True:
-			currentState = self.checkServer()
+		downThreshold = 10
+		checkInterval = 5
+		downCount = 0
 
-			edge = currentState - self.lastServerState
+		while True:
+			startTime = time()
+			if not self.checkServer():
+				downCount += 1
+			else:
+				downCount = 0
+
+			if downCount >= downThreshold:
+				downCount = downThreshold
+				currentServerState = 0
+			else:
+				currentServerState = 1
+
+			logging.debug("downCount = " + str(downCount))
+			logging.debug("currentServerState = " + str(currentServerState))
+			logging.debug("self.lastServerState = " + str(self.lastServerState))
+
+			edge = currentServerState - self.lastServerState
+
+			logging.debug("edge = " + str(edge))
 
 			if edge > 0:
-				logging.debug("Turning on")
+				logging.debug("** Turning on")
 				self.switch.turnOn()
 			elif edge < 0:
-				logging.debug("Turning off")
+				logging.debug("** Turning off")
 				self.switch.turnOff()
 
-			self.lastServerState = currentState
+			self.lastServerState = currentServerState
+
+			sleepTime = checkInterval - (time() - startTime)
+
+			if sleepTime > 0:
+				sleep(sleepTime)
 
 def test(wemo, phone):
 	switch = wemoSwitch(wemo)
@@ -154,7 +161,7 @@ def test(wemo, phone):
 	switch.turnOff()
 	sleep(1)
 	switch.turnOn()
-	watch = watcher(phone, switch, 30)
+	watch = watcher(phone, switch)
 	watch.start()
 
 test("192.168.1.107", "192.168.1.128")
